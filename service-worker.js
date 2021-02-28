@@ -18,7 +18,7 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener("fetch", (evt) => {
     console.log("[ServiceWorker] Fetch", evt.request.url);
-    if (evt.request.url.includes("faisolarifin.github.io/pwa/")) {
+    if (evt.request.url.includes("faisolarifin.github.io/")) {
         evt.respondWith(
             caches.open(CACHE_NAME).then((cache) => {
                 return cache.match(evt.request).then(
