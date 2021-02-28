@@ -16,17 +16,25 @@ self.addEventListener('install', function(event) {
     )
 })
 
-self.addEventListener('fetch', function(event) {
-    event.respondWith(
-        fetch(event.request)
-        .catch(() => {
-            return caches.open(CACHE_NAME)
-            .then((cache) => {
-                return cache.match(event.request)
+self.addEventListener("fetch", (evt) => {
+    console.log("[ServiceWorker] Fetch", evt.request.url);
+    if (evt.request.url.includes("faisolarifin.github.io/pwa/")) {
+        evt.respondWith(
+            caches.open(CACHE_NAME).then((cache) => {
+                return cache.match(evt.request).then(
+                    (cacheResponse) =>
+                    cacheResponse ||
+                    fetch(evt.request).then((networkResponse) => {
+                        cache.put(evt.request, networkResponse.clone());
+                        return networkResponse;
+                    })
+                );
             })
-        })
-    )
-})
+        );
+    } else {
+        evt.respondWith(fetch(evt.request));
+    }
+});
 
 self.addEventListener('activate', function(event) {
     event.waitUntil(
